@@ -1,7 +1,7 @@
 {
   "name": "dooy-js-tool",
-  "version": "0.1.1",
-  "description": "There are some funtions in my pro",
+  "version": "0.1.2",
+  "description": "Dooy 的小工具 想用拿走",
   "main": "dooy-js-tool.js",
   "scripts": {
     "test": "node test.js",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Dooy/"
+    "url": "https://github.com/Dooy/dooy-js-tool"
   },
   "keywords": [
     "test",

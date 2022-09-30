@@ -20,6 +20,6 @@ const dooy = require("dooy-js-tool");
 console.log( dooy.dateFormat(new Date(),"yyyy-MM-dd hh:mm:ss"));
 console.log( dooy.timeToDate( 1661656271,"yyyy-MM-dd hh:mm:ss"));
 console.log( dooy.nowStr( 1664400496));
-console.log( dooy.getQueryStr("abc")); // ?abc=123
+console.log( dooy.getQueryStr("abc")); // ?abc=123 仅支持 浏览器模式
 
 ```
