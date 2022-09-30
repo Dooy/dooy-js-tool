@@ -10,7 +10,7 @@ const dooy = require("dooy-js-tool");
 ## 浏览器引入
 
 ```html
-<script src="dooy-js-tool.min.js"></script>
+<script src="dist/dooy-js-tool.min.js"></script>
 ```
 
 ## 方法使用
@@ -20,6 +20,6 @@ const dooy = require("dooy-js-tool");
 console.log( dooy.dateFormat(new Date(),"yyyy-MM-dd hh:mm:ss"));
 console.log( dooy.timeToDate( 1661656271,"yyyy-MM-dd hh:mm:ss"));
 console.log( dooy.nowStr( 1664400496));
-console.log( dooy.nowStr( 1664317204));
+console.log( dooy.getQueryStr("abc")); // ?abc=123
 
 ```
