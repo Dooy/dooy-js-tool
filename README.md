@@ -38,7 +38,7 @@ console.log( dooy.tool.getQueryStr("abc")); // ?abc=123 仅支持 浏览器模�
 #或者
 let COS = require('cos-js-sdk-v5');
 ```
-调动
+调用
 
 ```html
 <input type="file"   onchange="upload">
