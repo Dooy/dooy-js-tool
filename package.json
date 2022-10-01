@@ -12,9 +12,11 @@
     "url": "https://github.com/Dooy/dooy-js-tool"
   },
   "keywords": [
-    "test",
-    "dooy",
-    "npm"
+    "tool",
+    "pigai",
+    "cos",
+    "es",
+    "elasticsearch"
   ],
   "author": "Dooy",
   "license": "ISC"
