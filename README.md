@@ -43,15 +43,27 @@ let COS = require('cos-js-sdk-v5');
 ```html
 <input type="file"   onchange="upload">
 <script>
+    /**
+     * init(opt) 
+     * opt 参数
+     * @param COS 腾讯云COS js
+     * @param {function} callback
+     * @param {String} stsMyServer 验证码服务器地址
+     * @param cosCdn 存放cos CDN 远程域名
+     * @param Bucket 存储桶
+     * @param Region 腾讯云园区
+     */
+    let opt={
+        COS
+        ,stsMyServer:'/pigai?c=mpad&a=cos&do=1' //批改网验证服务器
+        ,callback: res=>{
+            console.log("返回>>",res);
+        }
+    }
 function upload(e){
         const file = e.target.files && e.target.files[0];
 
-        dooy.cos.init({COS
-            ,stsMyServer:'/pigai?c=mpad&a=cos&do=1'
-            ,callback: res=>{
-            console.log("返回>>",res);
-            }
-        }).upload(file
+        dooy.cos.init(opt).upload(file
             ,{onProgress: info=>{
                     let percent = Math.floor(info.percent * 10000) / 100;
                     let speed = Math.floor(info.speed / 1024 / 1024 * 100) / 100;

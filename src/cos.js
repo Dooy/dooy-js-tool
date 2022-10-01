@@ -18,8 +18,19 @@
         } );
  */
 
-const tool= require('./tool')
+const tool= require('./tool');
+
+
 class  pigaiCos  {
+    /**
+     *
+     * @param COS 腾讯云COS js
+     * @param {function} callback
+     * @param {String} stsMyServer 验证码服务器地址
+     * @param cosCdn 存放cos CDN 远程域名
+     * @param Bucket 存储桶
+     * @param Region 腾讯云园区
+     */
     constructor({COS,callback,stsMyServer,cosCdn,Bucket,Region}) {
         this.COS=COS
         this.config={
