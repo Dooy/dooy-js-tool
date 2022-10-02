@@ -1,11 +1,11 @@
 {
   "name": "dooy-js-tool",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Dooy的小工具 想用拿走",
   "main": "dooy-js-tool.js",
   "scripts": {
     "test": "node test.js",
-    "build": "cd  ../github.com/jigsaw/ && node build",
+    "build": "cd  ../github.com/jigsaw/ && node build -d dooy",
     "dev": "cd  ../github.com/jigsaw/ && npm run dev"
   },
   "repository": {

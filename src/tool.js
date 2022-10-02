@@ -179,7 +179,7 @@ const tool={
         //let deep=false;
         //console.log('input>>',type,arguments);
         let type=1;
-        if(arguments.length>2) type[2]=arguments[2];
+        if(arguments.length>2) type=arguments[2];
 
         const target=targetObject;
         if(!this.isObject(copyObject)) return target;
@@ -198,6 +198,7 @@ const tool={
                 }
             }
         }
+        //console.log('target',target,targetObject);
         return target;
     }
 }

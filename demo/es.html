@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ES测试</title>
+    <!-- 引入 layui.css -->
+    <link href="//unpkg.com/layui@2.7.6/dist/css/layui.css" rel="stylesheet"/>
+
+    <!-- 引入 layui.js -->
+    <script src="//unpkg.com/layui@2.7.6/dist/layui.js"></script>
+    <style>
+        .pmain{max-width: 1124px;margin: 0 auto;}
+        .pcont{padding:20px 10px 0 10px }
+
+        .cardTj{display: flex; width: 100%;flex-direction: row;}
+        .cardTj .layui-panel{width: 150px; margin-right:10px; height: 100px;}
+        .cardTj .layui-text{padding: 10px 0 5px 0; text-align: center}
+        .cardTj .layui-text b{display: block;font-weight: bold;font-size: 30px;}
+        .cardTj .layui-text i{display: block;font-style: normal;}
+    </style>
+</head>
+<body>
+<div id="app">
+    <div style="position: relative;height: 60px;" class="layui-bg-black">
+        <ul class="layui-nav layui-show pmain" lay-filter="" style="border-radius: 0; ">
+            <li class="layui-nav-item"><a href="">最新活动</a></li>
+            <li class="layui-nav-item layui-this"><a href="">产品</a></li>
+            <li class="layui-nav-item"><a href="">大数据</a></li>
+            <li class="layui-nav-item">
+                <a href="javascript:;">解决方案</a>
+                <dl class="layui-nav-child"> <!-- 二级菜单 -->
+                    <dd><a href="">移动模块</a></dd>
+                    <dd><a href="">后台模版</a></dd>
+                    <dd><a href="">电商平台</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item"><a href="">社区</a></li>
+        </ul>
+    </div>
+    <div class="pmain pcont cardTj">
+        <div class="layui-panel"  >
+            <div  class="layui-text">
+                <b v-text="smain.total"></b>
+                <i>注册总人数</i>
+            </div>
+
+        </div>
+        <div class="layui-panel">
+            <div   class="layui-text">
+                <b v-text="smain.teacher"></b>
+                <i>老师注册数</i>
+            </div>
+        </div>
+        <div class="layui-panel">
+            <div   class="layui-text">
+                <b v-text="smain.teacher_rz"></b>
+                <i>已认证老师数</i>
+            </div>
+        </div>
+
+    </div>
+    <div class="pmain pcont">
+        <div id="shcool-map" style="min-width:400px;height:400px" v-if="es.isLoadTjChat"></div>
+        <div class="layui-panel" v-else>
+            <div   class="layui-text" style="padding: 30px 40px;text-align: center">
+                正在载入年度统计数据
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+<script src="https://cdn.pigai.org/res/js/vue.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios@0.27.2/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+
+<script src="https://cdn.highcharts.com.cn/highcharts/highcharts.js"></script>
+<script src="./demo/hc-school-main.js"></script>
+<script>
+    _school=['贵阳医学院','贵州医科大学'];
+    if (!window.dooy) {
+        document.write('<script src="../dist/dooy-js-tool.min.js"><\/script>');
+    }
+
+
+
+
+
+    let vm = new Vue({
+        el: '#app',
+        data(){
+            return {
+                school: _school,
+                es: {isLoadTjChat:false},
+                smain: {total: 'Loading', teacher: '...', teacher_rz: '...'}
+            }
+        },
+        created() {
+            this.member();
+        }
+        , mounted() {
+            this.teacherRequestAndEssay();
+
+        }
+        , methods: {
+            member(){
+                sql="select ts,rz,count(*) as cnt from pigaimember where school in ('"+this.school.join("','")+"') group by  ts,rz ";
+                let es= dooy.es.init({axios});
+                es.request( sql).then(res=>{
+                    console.log('返回',res);
+                    this.smain.total= res.data.hits.total;
+                    let ts= es.createBuckets(res.data.aggregations.ts.buckets);
+                    let t2=ts.getObjectByKey('1');
+                    if(t2){
+                        this.smain.teacher= t2.doc_count;
+                        let t2null=es.createBuckets(t2.rz.buckets).getObjectByKey("");
+                        console.log('t2null',t2null);
+                        this.smain.teacher_rz = t2.doc_count- t2null.doc_count;
+                    }
+                    console.log('ts2',t2);
+                }).catch(e=>{
+                    console.error(e);
+                });
+            }
+            ,teacherRequestAndEssay(){
+                let rq_sql="SELECT ctime,count(*) as cnt,sum(essay_cnt) as essay_cnt  FROM pigairequest where school in ('"+this.school.join("','")+"') and  ctime>'2012-01-01'   and ctime<now   group by  date_histogram(field='ctime','interval'='1y','alias'='ctime',format='yyyy年')"
+                let es_sql="SELECT ctime,count(*) as essay_cnt,sum(version) as version  FROM pigaiessay where school in ('"+this.school.join("','")+"') and  ctime>'2012-01-01'   and ctime<now   group by  date_histogram(field='ctime','interval'='1y','alias'='ctime',format='yyyy年')"
+
+                let es= dooy.es.init({axios});
+                es.when([rq_sql,es_sql],(rq,esRes)=>{
+                    this.es.isLoadTjChat=true;
+                    //console.log('返回', rq,esRes);
+                    let rqValue= es.createBuckets(rq.data.aggregations.ctime.buckets).getValue();
+                    let esValue= es.createBuckets(esRes.data.aggregations.ctime.buckets).getValue();
+                    //console.log('rqValue', rqValue,esValue);
+                    let rqV=[];
+                    for(let i in esValue){
+                        let o2={}
+                        _.extend(o2, esValue[i]);
+                        let ei=_.findIndex(rqValue,{ 'key': o2.key });
+                        _.extend(o2,ei>-1?rqValue[ei]:{cnt:0});
+                        rqV.push(o2);
+                    }
+                    //console.log('rqValue', rqV);
+                    //console.log('loash', _.map(rqV,'key'));
+                    HTC.title.text= this.school.splice(',')+' 年度使用情况';
+                    HTC.xAxis[0].categories=  _.map(rqV,'key');
+                    HTC.series[0].data= _.map(rqV,'essay_cnt');
+                    HTC.series[1].data= _.map(rqV,'version');
+                    HTC.series[2].data= _.map(rqV,'cnt');
+
+                    setTimeout(()=>{
+                        Highcharts.chart('shcool-map',HTC);
+                    },300)
+                }).catch(e=>{
+                    console.log('e>>',e);
+                });
+            }
+        }
+    });
+</script>
+
+</html>

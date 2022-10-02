@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>上传测试</title>
+    <!-- 引入 layui.css -->
+    <link href="//unpkg.com/layui@2.7.6/dist/css/layui.css" rel="stylesheet"/>
+
+    <!-- 引入 layui.js -->
+    <script src="//unpkg.com/layui@2.7.6/dist/layui.js"></script>
+    <style>
+        .pmain{max-width: 1124px;margin: 0 auto;}
+        .pcont{padding:20px 10px 0 10px }
+    </style>
+</head>
+<body>
+<div id="app">
+    <div style="position: relative;height: 60px;" class="layui-bg-black">
+        <ul class="layui-nav layui-show pmain" lay-filter="" style="border-radius: 0; ">
+            <li class="layui-nav-item"><a href="">最新活动</a></li>
+            <li class="layui-nav-item layui-this"><a href="">产品</a></li>
+            <li class="layui-nav-item"><a href="">大数据</a></li>
+            <li class="layui-nav-item">
+                <a href="javascript:;">解决方案</a>
+                <dl class="layui-nav-child"> <!-- 二级菜单 -->
+                    <dd><a href="">移动模块</a></dd>
+                    <dd><a href="">后台模版</a></dd>
+                    <dd><a href="">电商平台</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item"><a href="">社区</a></li>
+        </ul>
+    </div>
+    <div class="pmain pcont">
+        <div  style="padding-top: 20px">
+            <button type="button" class="layui-btn" @click="openUpload">
+                <i class="layui-icon">&#xe67c;</i>上传图片 <span v-if="cos.process>0" v-text="cos.speed"></span>
+            </button>
+            <input type="file" class="layui-upload-file" accept ref="upload" @change="upload">
+        </div>
+        <div class="layui-progress"  style="margin-top:10px ">
+            <div class="layui-progress-bar" :lay-percent="cos.process+'%'" :style="{width:cos.process+'%'}"></div>
+        </div>
+        <div class="layui-progress layui-progress-big"  style="margin-top:10px ">
+            <div class="layui-progress-bar" :lay-percent="cos.process+'%'" :style="{width:cos.process+'%'}">
+                <span class="layui-progress-text" v-if="cos.process>0">{{cos.process}}% 速度 {{cos.speed}}</span>
+            </div>
+        </div>
+
+        <div class="layui-panel" style="margin-top: 20px;">
+            <div style="padding: 30px;" class="layui-text">
+                <ul>
+                    <li>文件名：<span v-text="cos.rz.f"></span></li>
+                    <li>文件描述: <span v-text="cos.rz.fdes"></span></li>
+                    <li>远程连接: <a :href="cos.rz.fhttp" v-text="cos.rz.fhttp"></a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+<script src="https://cdn.pigai.org/res/js/vue.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/cos-js-sdk-v5/dist/cos-js-sdk-v5.min.js"></script>
+
+<script>
+    if (!window.dooy) {
+        document.write('<script src="../dist/dooy-js-tool.min.js"><\/script>');
+    }
+    let vm = new Vue({
+        el: '#app',
+        data: {
+            cos:{process:0,speed:'',rz:{f:'',fdes:'',fhttp:''}}
+        },
+        created() {
+            this.loadInit();
+        }
+        , mounted() {
+
+        }
+        , methods: {
+            loadInit(){
+
+            },
+            openUpload(){
+                this.$refs.upload.click();
+            }
+            ,upload(e){
+                const file = e.target.files && e.target.files[0];
+
+                dooy.cos.init({COS,stsMyServer:'/pigai?c=mpad&a=cos&do=1',callback:this.uploadCallBack}).upload(file,{onProgress:this.uploadProcess});
+
+            }
+            ,uploadCallBack(res){
+                console.log('res>>', res);
+                if(res.error==0){
+                    this.cos.rz= res.data;
+                }else{
+                    layer.msg( res.error_des);
+                }
+            }
+            ,uploadProcess(info){
+                var percent = Math.floor(info.percent * 10000) / 100;
+                var speed = Math.floor(info.speed / 1024 / 1024 * 100) / 100;
+                this.cos.process=percent;
+                this.cos.speed=speed + 'Mb/s';
+                console.log('进度：' + percent + '%; 速度：' + speed + 'Mb/s;');
+
+            }
+        }
+    });
+</script>
+
+</html>

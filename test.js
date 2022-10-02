@@ -13,6 +13,10 @@ console.log( dooy.tool.now( 1664400496));
 console.log( dooy.tool.now( "2022-10-01 05:28:16"));
 console.log( dooy.tool.now( new Date("2022-10-01 05:28:16")));
 
+let v1={cnt:1,ent:2} ,v2={a:2,b:2,cnt:2}
+
+let v3= dooy.tool.extend(v1,v2,3);
+console.log(v1,v2,v3);
 
 
 //是适合在浏览器下使用
