@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>学校大概统计</title>
+    <!-- 引入 layui.css -->
+    <link href="//unpkg.com/layui@2.7.6/dist/css/layui.css" rel="stylesheet"/>
+
+    <!-- 引入 layui.js -->
+    <script src="//unpkg.com/layui@2.7.6/dist/layui.js"></script>
+    <style>
+        .pmain{max-width: 1124px;margin: 0 auto;}
+        .pcont{padding:20px 10px 0 10px }
+
+        .cardTj{display: flex; width: 100%;flex-direction: row;flex-wrap: wrap}
+        .cardTj .layui-panel{width: 150px; margin-right:10px; margin-top:10px; height: 100px;}
+        .cardTj .layui-text{padding: 10px 0 5px 0; text-align: center}
+        .cardTj .layui-text b{display: block;font-weight: bold;font-size: 30px;}
+        .cardTj .layui-text i{display: block;font-style: normal;}
+        .loading {padding: 45px 0;text-align: center;font-size: 16px}
+    </style>
+</head>
+<body>
+<div id="app">
+    <div class="pmain pcont ">
+        <fieldset class="layui-elem-field layui-field-title">
+            <legend>注册用户概况</legend>
+        </fieldset>
+        <div class="cardTj">
+            <div class="layui-panel">
+                <div class="layui-text">
+                    <b v-text="smain.total" ></b>
+
+                    <i>总注册</i>
+                </div>
+            </div>
+
+            <div class="layui-panel">
+                <div class="layui-text">
+                    <b v-text="smain.teacher"></b>
+                    <i>老师注册</i>
+                </div>
+            </div>
+            <div class="layui-panel">
+                <div class="layui-text">
+                    <b v-text="smain.teacher_rz"></b>
+                    <i>已认证老师</i>
+                </div>
+            </div>
+            <div class="layui-panel">
+                <div class="layui-text">
+                    <b v-text="smain.student"></b>
+                    <i>学生注册</i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="pmain pcont ">
+        <fieldset class="layui-elem-field layui-field-title">
+            <legend>教师布置题目概况</legend>
+        </fieldset>
+        <div class="layui-panel " v-if="!st.request">
+            <div class="layui-text loading">
+               正在载入数据
+            </div>
+        </div>
+        <div class="cardTj" v-else>
+            <div class="layui-panel">
+                <div class="layui-text">
+                    <b v-text="request.rq_cnt"></b>
+                    <i>题目数</i>
+                </div>
+            </div>
+            <div class="layui-panel">
+                <div class="layui-text">
+                    <b v-text="request.t_user_cnt"></b>
+                    <i>布置题目老师数</i>
+                </div>
+            </div>
+            <div class="layui-panel">
+                <div class="layui-text">
+                    <b v-text="tool.numStr(request.t_essay_cnt)"></b>
+                    <i>收到作文篇数</i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="pmain pcont ">
+        <fieldset class="layui-elem-field layui-field-title">
+            <legend>学生提交作文概况</legend>
+        </fieldset>
+        <div class="layui-panel " v-if="!st.essay">
+            <div class="layui-text loading">
+                正在载入数据
+            </div>
+        </div>
+        <div class="cardTj" v-else>
+            <div class="layui-panel">
+                <div class="layui-text">
+                    <b v-text="tool.numStr(essay.essay_cnt)"></b>
+                    <i>作文篇数</i>
+                </div>
+            </div>
+            <div class="layui-panel">
+                <div class="layui-text">
+                    <b v-text="tool.numStr(essay.version)"></b>
+                    <i>版本次数</i>
+                </div>
+            </div>
+            <div class="layui-panel" v-if="essay.s_user_cnt>0">
+                <div class="layui-text">
+                    <b v-text="tool.numStr(essay.s_user_cnt)"></b>
+                    <i>学生数</i>
+                </div>
+            </div>
+            <div class="layui-panel" v-if="essay.s_rq_cnt>0">
+                <div class="layui-text">
+                    <b v-text="tool.numStr(essay.s_rq_cnt)"></b>
+                    <i>题目数</i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script src="https://cdn.pigai.org/res/js/vue.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios@0.27.2/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+<script src="https://cdn.highcharts.com.cn/highcharts/highcharts.js"></script>
+
+<script>
+    _school=['贵阳医学院','贵州医科大学'];
+    let vm = new Vue({
+        el: '#app',
+        data() {
+            return{
+                school: _school, tool:dooy.tool,
+                smain: {total: 'Loading', teacher: '...', teacher_rz: '...',student:0},
+                st:{request:false,essay:false},
+                request: {"rq_cnt": 0, "t_essay_cnt": 0, "t_user_cnt": 0},
+                essay: {"s_rq_cnt": 0, "s_user_cnt": 0, "essay_cnt": 0, "version": 0}
+            }
+        }
+        ,created(){
+            this.loadInit();
+        }
+        ,mounted(){
+
+        },
+        methods:{
+            getPigaiEs(){
+                let es= dooy.es.init({axios});
+                let pigaiEs = new dooy.pigaiEs(es,_,{
+                    school:this.school,stime:'2010-01-01'
+                    // where:{
+                    //     city:['福建','福建省']
+                    // }
+                });
+                return pigaiEs;
+            },
+            loadInit(){
+                this.getPigaiEs().getMember().then(res=>{
+                    this.smain= _.extend(this.smain ,res[0].data);
+                    //console.log('main>>', this.smain);
+                });
+                this.getPigaiEs().getRequest().then(res=>{
+                    this.st.request = true;
+                    this.request= _.extend(this.request ,res[0].data);
+                    //console.log('request>>', res[0]);
+                });
+                this.getPigaiEs().getEssay({all:1}).then(res=>{
+                    this.st.essay = true;
+                    this.essay= _.extend(this.essay ,res[0].data);
+                    //console.log('essay>>', res[0]);
+                });
+            }
+        }
+    });
+
+</script>
+</html>

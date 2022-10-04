@@ -200,6 +200,24 @@ const tool={
         }
         //console.log('target',target,targetObject);
         return target;
+    },
+
+    /**
+     * 数字转换显示 100000 显示10万 
+     * @param {Number} num 
+     * @returns {String}
+     */
+    numStr(num){
+        num= parseInt(num);
+        if(isNaN(num)) throw "输入必须是一个数字";
+        if(num<2000) return num;
+        //let rz='';
+        if(num<10000) return (Math.ceil(num/100-0.5)/10)+'K';
+        if(num<500000) return (Math.ceil(num/1000-0.5)/10)+'W';
+        if(num<10000000) return Math.ceil(num/10000-0.5)+'W';
+        if(num<100000000) return (Math.ceil(num/1000000-0.5)/10)+'KW';
+        return (Math.ceil(num/10000000-0.5)/10)+'亿';
+        
     }
 }
 

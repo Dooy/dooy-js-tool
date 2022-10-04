@@ -18,6 +18,7 @@ let v1={cnt:1,ent:2} ,v2={a:2,b:2,cnt:2}
 let v3= dooy.tool.extend(v1,v2,3);
 console.log(v1,v2,v3);
 
+console.log( dooy.tool.numStr(208000000) )
 
 //是适合在浏览器下使用
 //console.log( dooy.getQueryStr("abc")); // ?abc=123
