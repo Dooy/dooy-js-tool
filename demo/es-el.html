@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ES-el测试</title>
+    <script src="https://cdn.pigai.org/res/js/vue.min.js"></script>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- 引入组件库 -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+
+    <!-- 引入 layui.css -->
+    <link href="//unpkg.com/layui@2.7.6/dist/css/layui.css" rel="stylesheet"/>
+
+    <style>
+        .pmain{max-width: 1124px;margin: 0 auto;}
+        .pcont{padding:20px 10px 0 10px }
+
+        .cardTj{display: flex; width: 100%;flex-direction: row;flex-wrap: wrap; }
+        .cardTj .layui-panel{width: 150px; margin-right:10px; margin-top:10px; height: 100px;}
+        .cardTj .layui-text{padding: 10px 0 5px 0; text-align: center}
+        .cardTj .layui-text b{display: block;font-weight: bold;font-size: 30px;}
+        .cardTj .layui-text i{display: block;font-style: normal;}
+
+        .layui-inline .layui-form-mid{display: inline-block;float: none;margin-right:0;}
+        .phead{position: relative;height: 60px; background-color:rgba(66,66,66,0.9)}
+        .el-form-item__label{ color: #f7f7f7}
+    </style>
+</head>
+<body>
+<div id="app">
+    <div style="position: fixed;left: 0;right: 0;z-index: 2000" v-if="f.showBar">
+        <div   class="phead" >
+            <div class="pmain" style="padding:5px 0 0 10px ">
+
+                <el-form :inline="true"   class="demo-form-inline">
+                    <el-form-item label="">
+                        <el-date-picker
+                                v-model="f.se" type="daterange" :unlink-panels="true"
+                                range-separator="至" :disabled="f.fs=='y'"
+                                start-placeholder="开始日期" end-placeholder="结束日期"
+                                value-format="yyyy-MM-dd" :picker-options="datePick"
+                                :default-time="['00:00:00', '23:59:59']">
+                        </el-date-picker >
+
+                    </el-form-item>
+                    <el-form-item label="" v-if="f.showFs">
+                        <el-select  placeholder="选择方式" v-model="f.fs">
+                            <el-option :label="v+'报'" :value="k" v-for="(v,k ) in opt"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @click="qSearch()"  v-loading="es.isLoadTjChat" >查询</el-button>
+                    </el-form-item>
+                </el-form>
+
+            </div>
+        </div>
+    </div>
+
+    <div style="height: 60px;" v-if="f.showBar"></div>
+
+
+    <div class="pmain pcont " >
+        <fieldset class="layui-elem-field layui-field-title" >
+            <legend>概况</legend>
+        </fieldset>
+        <div class="cardTj">
+            <div class="layui-panel">
+                <div class="layui-text">
+                    <b v-text="tool.numStr(smain.total)" v-if="smain.total>0"></b>
+                    <b v-else>Loading..</b>
+                    <i>注册总人数</i>
+                </div>
+
+            </div>
+            <div class="layui-panel">
+                <div class="layui-text">
+                    <b v-text="smain.teacher"></b>
+                    <i>老师注册数</i>
+                </div>
+            </div>
+            <div class="layui-panel">
+                <div class="layui-text">
+                    <b v-text="smain.teacher_rz"></b>
+                    <i>已认证老师数</i>
+                </div>
+            </div>
+
+            <div class="layui-panel" v-loading="es.isLoadTjChat">
+                <div class="layui-text">
+                    <b v-text="es.rq_cnt"></b>
+                    <i>题目数</i>
+                </div>
+            </div>
+            <div class="layui-panel" v-loading="es.isLoadTjChat">
+                <div class="layui-text">
+                    <b v-text="tool.numStr(es.essay_cnt)"></b>
+                    <i>作文篇数</i>
+                </div>
+            </div>
+            <div class="layui-panel" v-loading="es.isLoadTjChat">
+                <div class="layui-text">
+                    <b v-text="tool.numStr(es.version)"></b>
+                    <i>版本次数</i>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="pmain pcont" v-if="f.showChat">
+        <fieldset class="layui-elem-field layui-field-title" >
+            <legend>图标</legend>
+        </fieldset>
+        <div id="shcool-map" style="min-width:400px;height:400px" v-loading="es.isLoadTjChat"></div>
+
+    </div>
+
+    <div class="pmain pcont" >
+        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
+            <legend>{{opt[f.fs]}}统计数据</legend>
+        </fieldset>
+        <table class="layui-table" v-if="rqData.length>0">
+            <thead>
+            <tr>
+                <th rowspan="2">时间</th>
+                <th colspan="2">注册用户</th>
+                <th colspan="3">老师题目</th>
+                <th colspan="2">学生作文</th>
+            </tr>
+            <tr>
+                <th>总数</th>
+                <th>老师数</th>
+                <th>老师数</th>
+                <th>题目</th>
+                <th>收到作文</th>
+                <th>篇数</th>
+                <th>版本次数</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="v in rqData">
+                <td v-text="v.key">11</td>
+                <td v-text="v.total">12</td>
+                <td v-text="v.teacher_cnt">13</td>
+                <td v-text="v.t_user_cnt">31</td>
+                <td v-text="v.rq_cnt">32</td>
+                <td v-text="v.t_essay_cnt">33</td>
+                <td v-text="v.essay_cnt">41</td>
+                <td v-text="v.version">42</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/axios@0.27.2/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+
+<script src="https://cdn.highcharts.com.cn/highcharts/highcharts.js"></script>
+<script src="./demo/hc-school-main.js"></script>
+<script src="./demo/date-pick.js"></script>
+<script>
+    _school=['贵阳医学院','贵州医科大学'];
+    _fs={se:['',''],fs:'y',showBar:1,showChat:0,showFs:1};
+
+
+
+    let vm = new Vue({
+        el: '#app',
+        data(){
+            return {
+                school: _school,
+                opt:{'y':'年','m':'月','w':'周','d':'日'},
+                f:{se:['',''],fs:'y',showBar:1,showChat:1,showFs:1},
+                tool:dooy.tool,
+                isRank:{member:false,essay:false,request:false},
+                es: {isLoadTjChat:true,rq_cnt:0,version:0,essay_cnt:0},
+                smain: {total: 'Loading', teacher: '...', teacher_rz: '...'},
+                rqData:[],
+                table:null,datePick:datePick
+            }
+        },
+        created() {
+            this.member();
+            //_.extend(thi)
+            Object.assign(this.f , _fs );
+            //this.debug();
+        }
+        , mounted() {
+            this.teacherRequestAndEssay();
+
+        }
+        , methods: {
+            qSearch(){
+                this.teacherRequestAndEssay();
+            },
+            debug(){
+                this.getPigaiEs().rankMember().then(res=>{
+                    console.log('用户',res[0]);
+                })
+            },
+            error(msg){
+                this.$notify.error({
+                    title: '错误',
+                    message: msg
+                });
+                this.es.isLoadTjChat=false;
+            },
+            getPigaiEs(){
+                // where:{
+                //     city:['福建','福建省']
+                // }
+                console.log('school>>', this.school );
+               // let school=
+                let opt={school:this.school};
+                if(this.f.fs=='y'){
+                    opt.rank='y';
+                    opt.stime= '2010-01-01';
+                    opt.etime= dooy.tool.dateFormat("yyyy-MM-dd");
+                }else{
+                    if(this.f.se[1]=='' || this.f.se[0]==''){ this.error("请选日期");return  false;}
+                    let dt= Math.ceil( (new Date(this.f.se[1]))/1000-(new Date(this.f.se[0]))/1000);
+                    if( dt<=0 ){ this.error("结束日期必须大于开始日期");return  false;}
+                    if( dt>365*24*3600 ){ this.error("时间跨度必须在一年内，请重选日期");return  false;}
+                    //return false;
+                    opt.stime= this.f.se[0];
+                    opt.etime= this.f.se[1];
+                    opt.rank=this.f.fs;
+                    //console.log('ddd>>', opt);
+                    //return ;
+                }
+
+                let es= dooy.es.init({axios});
+                let pigaiEs = new dooy.pigaiEs(es,_, opt);
+                return pigaiEs;
+            },
+            member(){
+                this.getPigaiEs().getMember({stime:'2010-01-01'}).then(res=>{
+                    this.smain=res[0].data;
+                });
+            }
+            ,teacherRequestAndEssay() {
+                this.es.isLoadTjChat=true;
+                let pEs=this.getPigaiEs();
+                if(pEs==false) return;
+                pEs.rankRequest().rankEssay().rankMember().then( res=>{
+                    //console.log("Member>",res);
+
+                    this.es.isLoadTjChat=false;
+                    let rqValue=res[0].data;
+                    let esValue=res[1].data;
+                    let rqV=[];
+                    _.assign(rqV,esValue);
+                    console.log('rqv>',rqV);
+                    rqV=pEs.concat(rqV,rqValue,'request');
+                    rqV=pEs.concat(rqV,esValue,'essay');
+                    rqV=pEs.concat(rqV,res[2].data,'member');
+                    console.log('rqv2>',rqV);
+                    this.rqData=rqV;
+
+                    HTC.title.text= this.school+' '+this.opt[this.f.fs]+'使用情况';
+                    HTC.xAxis[0].categories=  _.map(rqV,'key');
+                    HTC.series[0].data= _.map(rqV,'essay_cnt');
+                    HTC.series[1].data= _.map(rqV,'version');
+                    HTC.series[2].data= _.map(rqV,'rq_cnt');
+
+                    this.es.rq_cnt= _.sumBy(rqV,'rq_cnt');
+                    this.es.essay_cnt= _.sumBy(rqV,'essay_cnt');
+                    this.es.version= _.sumBy(rqV,'version');
+
+
+                    if(this.f.showChat) setTimeout(()=>{Highcharts.chart('shcool-map',HTC);},300)
+
+                }).catch(e=>{
+                    throw "发生错误："+e;
+                });
+
+            }
+
+        }
+
+    });
+</script>
+
+</html>

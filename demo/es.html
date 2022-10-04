@@ -17,25 +17,51 @@
         .cardTj .layui-text{padding: 10px 0 5px 0; text-align: center}
         .cardTj .layui-text b{display: block;font-weight: bold;font-size: 30px;}
         .cardTj .layui-text i{display: block;font-style: normal;}
+
+        .layui-inline .layui-form-mid{display: inline-block;float: none;margin-right:0;}
     </style>
 </head>
 <body>
 <div id="app">
     <div style="position: relative;height: 60px;" class="layui-bg-black">
-        <ul class="layui-nav layui-show pmain" lay-filter="" style="border-radius: 0; ">
-            <li class="layui-nav-item"><a href="">最新活动</a></li>
-            <li class="layui-nav-item layui-this"><a href="">产品</a></li>
-            <li class="layui-nav-item"><a href="">大数据</a></li>
-            <li class="layui-nav-item">
-                <a href="javascript:;">解决方案</a>
-                <dl class="layui-nav-child"> <!-- 二级菜单 -->
-                    <dd><a href="">移动模块</a></dd>
-                    <dd><a href="">后台模版</a></dd>
-                    <dd><a href="">电商平台</a></dd>
-                </dl>
-            </li>
-            <li class="layui-nav-item"><a href="">社区</a></li>
-        </ul>
+        <div class="pmain" style="padding:5px 0 0 10px ">
+            <div class="layui-inline" >
+                <form class="layui-form layui-inline layui-bg-black">
+                    <div class="layui-nav-item layui-input-inline">
+                        <a href="javascript:;">解决方案</a>
+                        <dl class="layui-nav-child"> <!-- 二级菜单 -->
+                            <dd><a href="">移动模块</a></dd>
+                            <dd><a href="">后台模版</a></dd>
+                            <dd><a href="">电商平台</a></dd>
+                        </dl>
+                    </div>
+
+                    <div class="layui-input-inline">方式</div>
+                    <div class="layui-input-inline layui-bg-black">
+                        <select name="modules" class="layui-bg-black">
+                            <option value="y">年</option>
+                            <option value="m">月</option>
+                            <option value="w">周</option>
+                            <option value="d">日</option>
+                        </select>
+                    </div>
+
+
+                        <div class="layui-input-inline layui-text" >日期:</div>
+                        <div class="layui-input-inline " id="cFrom">
+                            <span v-html="f.stime+'至'+f.etime"></span>
+                        </div>
+                        <div class="layui-input-inline" style="display: none">
+                            <input type="text" v-model="f.stime" autocomplete="off" id="startDate" class="layui-input"
+                                   placeholder="开始日期">
+
+                            <input type="text" v-model="f.etime" autocomplete="off" id="endDate" class="layui-input"
+                                   placeholder="结束日期">
+                        </div>
+
+                </form>
+            </div>
+        </div>
     </div>
     <div class="pmain pcont cardTj">
         <div class="layui-panel"  >
@@ -92,8 +118,10 @@
 
     <div class="pmain pcont" v-if="rqData.length>0">
         <fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
-            <legend>数据</legend>
+            <legend>年度统计数据</legend>
         </fieldset>
+
+
         <table class="layui-table" >
             <thead>
             <tr>
@@ -144,18 +172,31 @@
 
 
 
-
+    layui.use('laydate', function() {
+        var laydate = layui.laydate;
+        laydate.render({
+            elem: '#cFrom'
+            ,range: ['#startDate', '#endDate']
+            ,done (v,sdate,edate){
+                //console.log('date>>', arguments );
+            }
+            ,min:'2010-01-01'
+            ,max:dooy.tool.dateFormat("yyyy-MM-dd")
+        });
+    });
 
     let vm = new Vue({
         el: '#app',
         data(){
             return {
                 school: _school,
+                f:{stime:'2010-01-01',etime:dooy.tool.dateFormat("yyyy-MM-dd")},
                 tool:dooy.tool,
                 isRank:{member:false,essay:false,request:false},
                 es: {isLoadTjChat:false,rq_cnt:0,version:0,essay_cnt:0},
                 smain: {total: 'Loading', teacher: '...', teacher_rz: '...'},
-                rqData:[]
+                rqData:[],
+                table:null
             }
         },
         created() {
@@ -224,8 +265,10 @@
                     this.es.essay_cnt= _.sumBy(rqV,'essay_cnt');
                     this.es.version= _.sumBy(rqV,'version');
 
+
                     setTimeout(()=>{
                         Highcharts.chart('shcool-map',HTC);
+                        //this.toTable();
                     },300)
 
                 }).catch(e=>{
@@ -233,6 +276,7 @@
                 });
 
             }
+
 
         }
     });
