@@ -13,7 +13,7 @@ const dooy = require("dooy-js-tool");
 <script src="dist/dooy-js-tool.min.js"></script>
 ```
 
-## 一般工具 方法使用
+## 工具 方法使用
 ```js
 
 
@@ -73,5 +73,70 @@ function upload(e){
 
     }
 </script>
+```
+## ES
+需要  axios支持
+```html
+<script src="https://cdn.jsdelivr.net/npm/axios@0.27.2/dist/axios.min.js"></script>
+```
+使用
+```js
+ let es= dooy.es.init({axios});
+ //新建一个buckets
+ let ts = es.createBuckets(res.data.aggregations.ts.buckets);
+ //获取bucket中 key 为 1的值
+ let t2 = ts.getObjectByKey('1');
+
+//获取bucket 中的日志 带 key doc_cnt 和file.value 
+ let rz=ts.getValue();
+```
+## 批改ES
+需要 lodash axios支持
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/axios@0.27.2/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+```
+
+调用
+
+```js
+getPigaiEs(){
+    let opt={
+        school:'',//学校 支持多学校[’北京大学‘,'南京大学']
+        stime:'2010-01-01',//开始日期
+        etime:'2022-10-01',//截止日期
+        rank:'y',//排序方式 y 年，m 月，w 周，d 日
+        where:{},//其他条件 比如地域 where.city=['北京市'，’北京‘]
+    }
+    let es= dooy.es.init({axios});
+    let pigaiEs = new dooy.pigaiEs(es,_, opt);
+    return pigaiEs;
+}
+//获取概况统计 分别获取
+loadInit(){
+    this.getPigaiEs().getMember().then(res=>{
+        this.smain= _.extend(this.smain ,res[0].data);
+        //console.log('main>>', this.smain);
+    });
+    this.getPigaiEs().getRequest().then(res=>{
+        this.st.request = true;
+        this.request= _.extend(this.request ,res[0].data);
+        //console.log('request>>', res[0]);
+    });
+    this.getPigaiEs().getEssay({all:1}).then(res=>{
+        this.st.essay = true;
+        this.essay= _.extend(this.essay ,res[0].data);
+        //console.log('essay>>', res[0]);
+    });
+}
+
+//获取按年、月、周、日统计 多次请求等等回来 像 jquery.wehn,axios.all
+this.getPigaiEs().rankRequest().rankEssay().rankMember().then( res=>{
+    let request= res[0].data;
+    let essay= res[1].data;
+    let member= res[2].data;
+});
+
 ```
  

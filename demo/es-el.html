@@ -120,7 +120,7 @@
         <fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
             <legend>{{opt[f.fs]}}统计数据</legend>
         </fieldset>
-        <table class="layui-table" v-if="rqData.length>0">
+        <table class="layui-table" v-if="rqData.length>0" v-loading="es.isLoadTjChat">
             <thead>
             <tr>
                 <th rowspan="2">时间</th>

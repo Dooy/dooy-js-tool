@@ -97,21 +97,40 @@ const tool={
      * @returns {string}
      */
     nowStr(timesTamp){
-        let now= Math.round(new Date() / 1000);
+        
+        let now= Math.round(  new Date() / 1000);
         let dt= now-timesTamp;
         //let today= new Date( this.dateFormat(new Date(),"yyyy-MM-dd"));
         if(dt<120) return '刚刚';
         if(dt<60*30) return Math.round(dt/60)+'分钟前';
-        if(dt<60*40) return '半小时前';
-        if(this.timeToDate(now,"yyyy-MM-dd") ==this.timeToDate(timesTamp,"yyyy-MM-dd") ){
-            if(dt<12*3600){
-                return Math.round(dt/3600)+'小时前';
-            }
-            return this.timeToDate(timesTamp,'hh:mm');
-        }
-        if(dt<2*24*3600) return '1天前';
-        if(dt<3*24*3600) return '2天前';
-        if(dt<4*24*3600) return '3天前';
+        if(dt<60*45) return '半小时前';
+        // if(this.timeToDate(now,"yyyy-MM-dd") ==this.timeToDate(timesTamp,"yyyy-MM-dd") ){
+        //     if(dt<12*3600){
+        //         return Math.round(dt/3600)+'小时前';
+        //     }
+        //     return this.timeToDate(timesTamp,'hh:mm');
+        // }
+        
+        let today= new Date();
+        today.setHours(0);
+        today.setMinutes(0);
+        today.setSeconds(0);
+
+        let zT= new Date(today),qT=new Date(today);
+        let t12= new Date();
+        t12.setHours(t12.getHours()-10 );//5小时前
+
+        zT.setDate(today.getDate()-1);
+        qT.setDate(today.getDate()-2);
+        
+        if(timesTamp>t12/1000) return  Math.round(dt/3600)+'小时前';;
+        if(timesTamp>today/1000) return '今天';
+        if(timesTamp>zT/1000) return '昨天';
+        if(timesTamp>qT/1000) return '前天';
+
+        // if(dt<2*24*3600) return '1天前';
+        // if(dt<3*24*3600) return '2天前';
+        // if(dt<4*24*3600) return '3天前';
         return this.timeToDate(timesTamp,"yyyy-MM-dd");
 
     },
