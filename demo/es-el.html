@@ -120,37 +120,24 @@
         <fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
             <legend>{{opt[f.fs]}}统计数据</legend>
         </fieldset>
-        <table class="layui-table" v-if="rqData.length>0" v-loading="es.isLoadTjChat">
-            <thead>
-            <tr>
-                <th rowspan="2">时间</th>
-                <th colspan="2">注册用户</th>
-                <th colspan="3">老师题目</th>
-                <th colspan="2">学生作文</th>
-            </tr>
-            <tr>
-                <th>总数</th>
-                <th>老师数</th>
-                <th>老师数</th>
-                <th>题目</th>
-                <th>收到作文</th>
-                <th>篇数</th>
-                <th>版本次数</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-for="v in rqData">
-                <td v-text="v.key">11</td>
-                <td v-text="v.total">12</td>
-                <td v-text="v.teacher_cnt">13</td>
-                <td v-text="v.t_user_cnt">31</td>
-                <td v-text="v.rq_cnt">32</td>
-                <td v-text="v.t_essay_cnt">33</td>
-                <td v-text="v.essay_cnt">41</td>
-                <td v-text="v.version">42</td>
-            </tr>
-            </tbody>
-        </table>
+        <el-table :data="rqData" style="width: 100%" v-if="rqData.length>0" max-height="500" 
+            size="small" v-loading="es.isLoadTjChat" :default-sort = "{prop: 'key', order: 'descending'}">
+            <el-table-column prop="key" label="日期" sortable> </el-table-column>
+            <el-table-column label="注册用户"> 
+                <el-table-column prop="total" label="总数" sortable> </el-table-column>
+                <el-table-column prop="teacher_cnt" label="老师"> </el-table-column>
+            </el-table-column>
+            <el-table-column label="老师布置题目"> 
+                <el-table-column prop="rq_cnt" label="题目" sortable> </el-table-column>
+                <el-table-column prop="t_user_cnt" label="老师"> </el-table-column>
+                <el-table-column prop="t_essay_cnt" label="收到作文" sortable> </el-table-column>
+            </el-table-column>
+            <el-table-column label="学生提交作文"> 
+                <el-table-column prop="essay_cnt" label="篇数" sortable> </el-table-column>
+                <el-table-column prop="version" label="版本次数" sortable> </el-table-column>
+            </el-table-column>
+        </el-table>
+        
     </div>
 
 </div>
@@ -165,7 +152,7 @@
 <script src="./demo/date-pick.js"></script>
 <script>
     _school=['贵阳医学院','贵州医科大学'];
-    _fs={se:['',''],fs:'y',showBar:1,showChat:0,showFs:1};
+    _fs={se:['',''],fs:'y',showBar:1,showChat:1,showFs:1};
 
 
 

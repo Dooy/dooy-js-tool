@@ -1,5 +1,10 @@
 const tool= require('./tool')
 class es{
+    /**
+     * 
+     * @param {axios} axios 
+     * @param {String} esServer 
+     */
     constructor({axios,esServer='/_sql'}) {
         this.axios=axios;
         this.esServer=esServer;
