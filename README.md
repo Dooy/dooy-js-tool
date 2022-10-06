@@ -14,9 +14,8 @@ const dooy = require("dooy-js-tool");
 ```
 
 ## 工具 方法使用
+[在线运行](https://codepen.io/dooy/pen/qBYywzm)
 ```js
-
-
 console.log( dooy.tool.dateFormat("yyyy-MM-dd hh:mm:ss" ) );
 console.log( dooy.tool.dateFormat("yyyy-MM-dd hh:mm:ss",new Date()) );
 console.log( dooy.tool.dateFormat("yyyy-MM-dd hh:mm:ss",'2022-09-10') );
@@ -29,6 +28,7 @@ console.log( dooy.tool.now( new Date("2022-10-01 05:28:16")));
 console.log( dooy.tool.getQueryStr("abc")); // ?abc=123 仅支持 浏览器模式
 
 ```
+
 
 ## 腾讯COS
 
