@@ -26,6 +26,7 @@ console.log( dooy.tool.now( "2022-10-04 09:55:16"));
 
 let es =dooy.es.init({axios,esServer:'abc'});
 es.createBuckets();
+let pigaiLogin= dooy.pigaiLogin.init({axios})
 
 
 

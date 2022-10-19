@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>批改网登录</title>
+    <script src="https://cdn.pigai.org/res/js/vue.min.js"></script>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- 引入组件库 -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+
+    <!-- 引入 layui.css -->
+    <link href="//unpkg.com/layui@2.7.6/dist/css/layui.css" rel="stylesheet"/>
+</head>
+<body>
+<div id="app">
+
+    <el-card style="margin: 20px;max-width: 500px">
+        <el-form ref="form" :model="form" label-width="80px" v-if="!userInfo">
+            <el-form-item label="用户名">
+                <el-input v-model="form.name"></el-input>
+            </el-form-item>
+            <el-form-item label="密码">
+                <el-input v-model="form.psw"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="onSubmit">登录</el-button>
+
+
+            </el-form-item>
+        </el-form>
+
+        <template v-else>
+        <el-descriptions title="带边框列表" :column="2"    >
+            <el-descriptions-item>
+                <template slot="label"><i class="el-icon-user"></i>UID</template>
+                {{userInfo.userId}}
+            </el-descriptions-item>
+            <el-descriptions-item>
+                <template slot="label"><i class="el-icon-user"></i>用户名</template>
+                {{userInfo.userName}}
+            </el-descriptions-item>
+
+            <el-descriptions-item>
+                <template slot="label"><i class="el-icon-user"></i>昵称</template>
+                {{userInfo.nickName}}
+            </el-descriptions-item>
+
+            <el-descriptions-item>
+                <template slot="label"><i class="el-icon-user"></i>学校</template>
+                {{userInfo.school}}
+            </el-descriptions-item>
+
+        </el-descriptions>
+        <el-button type="primary" @click="logout">登出</el-button>
+       </template>
+    </el-card>
+
+</div>
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/axios@0.27.2/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data: function() {
+            return {
+                form:{
+                name:'',psw:''
+                },
+                pigaiLogin: dooy.pigaiLogin.init({axios}),//
+                userInfo:null
+            }
+        }
+        ,created(){
+
+        }
+        ,mounted(){
+            //this.pigaiLogin= dooy.pigaiLogin.init({axios});
+            //console.log("dddd>" , this.pigaiLogin.getJsPigaiInfo());
+            this.userInfo =  this.pigaiLogin.getJsPigaiInfo();
+        }
+        ,methods:{
+            onSubmit(){
+                this.pigaiLogin.login(this.form.name,this.form.psw).then(res=>{
+                    console.log('dddd',res);
+                    if(res.error==0){
+                        this.userInfo=res.data;
+                    }
+                });
+            }
+            ,logout(){
+                this.pigaiLogin.logout();
+            }
+        }
+    })
+</script>
+</html>

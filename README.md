@@ -139,4 +139,39 @@ this.getPigaiEs().rankRequest().rankEssay().rankMember().then( res=>{
 });
 
 ```
+## 批改网登录登出
+初始化
+```js
+let pigaiLogin=  dooy.pigaiLogin.init({axios})
+```
+获取登录信息
+```js
+let u = pigaiLogin.getJsPigaiInfo();
+#未登录为 null
+#有登录为 返回
+{
+    "userName": "用户名",
+    "userId": "123",
+    "isLogin": true,
+    "nickName": "显示名字",
+    "lang": "cn",
+    "isV": 1,
+    "ts": 2,
+    "school": "学校"
+}
+```
+
+登录
+```js
+pigaiLogin.login(this.form.name,this.form.psw).then(res=>{
+                    console.log('dddd',res);
+                    if(res.error==0){
+                        userInfo=res.data;
+                    }
+                });
+```
+登出
+```js
+pigaiLogin.login();
+```
  

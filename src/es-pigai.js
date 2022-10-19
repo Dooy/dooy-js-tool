@@ -114,7 +114,7 @@ class esPigai{
             rz[i].teacher_cnt= bkT? bkT.doc_count:0;
             rz[i].student_cnt=rz[i].total-rz[i].teacher_cnt;
         }
-        console.log('bk1>>',rz);
+        //console.log('bk1>>',rz);
         return rz;
     }
     getEssay(){

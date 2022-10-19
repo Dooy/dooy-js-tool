@@ -1,6 +1,6 @@
 {
   "name": "dooy-js-tool",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Dooy的小工具 想用拿走",
   "main": "dooy-js-tool.js",
   "scripts": {

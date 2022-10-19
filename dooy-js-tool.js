@@ -2,6 +2,7 @@ const tool = require("./src/tool")
 const pigaiCos = require('./src/cos')
 const es = require('./src/es')
 const pigaiEs =require('./src/es-pigai')
+const pigaiLogin= require('./src/pigaiLogin');
 
 module.exports = {tool,pigaiEs,
     es:{
@@ -13,6 +14,11 @@ module.exports = {tool,pigaiEs,
     ,cos:{
         init({COS,callback,stsMyServer,cosCdn,Bucket,Region}){
             return new pigaiCos(arguments[0]);
+        }
+    }
+    ,pigaiLogin:{
+        init({axios}){
+            return new pigaiLogin(arguments[0]);
         }
     }
 };
