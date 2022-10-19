@@ -172,6 +172,6 @@ pigaiLogin.login(this.form.name,this.form.psw).then(res=>{
 ```
 登出
 ```js
-pigaiLogin.login();
+pigaiLogin.logout();
 ```
  
